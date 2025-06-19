@@ -20,11 +20,10 @@ connectDB();
 // Middlewares
 app.use(bodyParser.json());
 const allowedOrigins = [
-  'https://marketing-site-ten-mu.vercel.app',
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://admin-blogs.vercel.app',
-  'https://www.kifaytihealth.com'
+  'https://www.kifaytihealth.com',
+  'https://admin-blogs-main.vercel.app'
 ];
 
 app.use(cors({
