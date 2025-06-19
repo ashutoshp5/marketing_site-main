@@ -1,0 +1,154 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.02) translateY(-3px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.logos {
+  overflow: hidden;
+  padding: 80px 0;
+  background: transparent;
+  white-space: nowrap;
+  position: relative;
+  margin-top: 20px;
+}
+
+.logos:before,
+.logos:after {
+  position: absolute;
+  top: 0;
+  width: 200px;
+  height: 100%;
+  content: "";
+  z-index: 2;
+  pointer-events: none; /* Ensures the gradients don't interfere with clicks */
+}
+
+
+
+.logos-slide {
+  display: inline-block;
+  animation: slide 30s linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* Don't pause the entire animation on hover anymore */
+.logos-slide img {
+  height: 75px;
+  margin: 0 40px;
+  display: inline-block;
+  opacity: 0.9;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  filter: grayscale(30%);
+  /* Remove default floating animation */
+}
+
+/* Enhanced hover effects */
+.logos-slide img:hover {
+  opacity: 1;
+  transform: scale(1.15);
+  filter: grayscale(0%) drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .logos {
+    padding: 50px 0;
+  }
+
+  .logos-slide {
+    animation: slide 25s linear infinite; /* Slightly faster on mobile */
+  }
+
+  .logos-slide img {
+    height: 48px;
+    margin: 0 40px;
+    touch-action: pan-y pinch-zoom; /* Better touch handling */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile touch effects */
+  @media (hover: none) {
+    .logos-slide img:active {
+      opacity: 1;
+      transform: scale(1.15);
+      filter: grayscale(0%) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
+    }
+    
+    /* Prevent animation pause on touch */
+    .logos:active .logos-slide {
+      animation-play-state: running;
+    }
+  }
+}
+
+/* Add alternating vertical offset for more visual interest */
+.logos-slide img:nth-child(even) {
+  transform: translateY(-5px);
+}
+
+.logos-slide img:nth-child(odd) {
+  transform: translateY(5px);
+}
+
+/* Maintain the offset during hover */
+.logos-slide img:nth-child(even):hover {
+  transform: translateY(-5px) scale(1.15);
+}
+
+.logos-slide img:nth-child(odd):hover {
+  transform: translateY(5px) scale(1.15);
+}
+
+/* Add shine effect on hover */
+@keyframes shine {
+  0% {
+    filter: brightness(100%) grayscale(30%);
+  }
+  50% {
+    filter: brightness(120%) grayscale(0%);
+  }
+  100% {
+    filter: brightness(100%) grayscale(30%);
+  }
+}
+
+.logos-slide img:hover {
+  animation: shine 2s infinite;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .logos-slide {
+    animation-duration: 40s;
+  }
+  
+  .logos-slide img:hover {
+    animation: none;
+    transform: scale(1.1);
+  }
+}

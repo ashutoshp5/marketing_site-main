@@ -1,0 +1,44 @@
+/* src/pages/BlogDetail.css */
+
+.prose img {
+    /* Add a border around images */
+    border: 2px solid #38b2ac; /* Tailwind's teal-500 */
+    border-radius: 0.5rem; /* Tailwind's rounded-lg */
+  }
+  
+  .prose h1 {
+    /* Customize heading styles */
+    color: #2c7a7b; /* Tailwind's teal-700 */
+  }
+  
+  .prose a {
+    /* Style links */
+    color: #319795; /* Tailwind's teal-500 */
+  }
+  
+  .prose a:hover {
+    color: #2c7a7b; /* Tailwind's teal-700 */
+  }
+  
+  /* Customize blockquotes */
+  .prose blockquote {
+    border-left: 4px solid #38b2ac;
+    padding-left: 1rem;
+    color: #4a5568; /* Tailwind's gray-700 */
+    font-style: italic;
+  }
+  
+  /* Customize code blocks */
+  .prose pre {
+    background-color: #2d3748; /* Tailwind's gray-800 */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
+  
+  .prose code {
+    background-color: #edf2f7; /* Tailwind's gray-200 */
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+  }
+  
