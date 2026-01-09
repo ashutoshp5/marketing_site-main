@@ -1,12 +1,10 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import path from "path";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js'; // Added .js extension
-
-dotenv.config();
 
 // Import Routes
 import contactRoutes from "./routes/contactRoutes.js"; // Added .js extension
