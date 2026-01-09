@@ -48,7 +48,8 @@
 
 
 .logos-slide {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   animation: slide 30s linear infinite;
   white-space: nowrap;
   will-change: transform;
@@ -59,6 +60,8 @@
   height: 75px;
   margin: 0 40px;
   display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
   opacity: 0.9;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -106,23 +109,7 @@
   }
 }
 
-/* Add alternating vertical offset for more visual interest */
-.logos-slide img:nth-child(even) {
-  transform: translateY(-5px);
-}
-
-.logos-slide img:nth-child(odd) {
-  transform: translateY(5px);
-}
-
-/* Maintain the offset during hover */
-.logos-slide img:nth-child(even):hover {
-  transform: translateY(-5px) scale(1.15);
-}
-
-.logos-slide img:nth-child(odd):hover {
-  transform: translateY(5px) scale(1.15);
-}
+/* Keep all logos on the same baseline (no vertical staggering) */
 
 /* Add shine effect on hover */
 @keyframes shine {
