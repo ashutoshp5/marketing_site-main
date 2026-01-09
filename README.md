@@ -1,337 +1,230 @@
-# Marketing Site Project
+# Kifayti Health — Marketing Website
 
-Welcome to the **Marketing Site Project**! This repository contains a comprehensive solution for a marketing website, complete with frontend, backend, and an administrative interface. The project leverages modern technologies to deliver a seamless and efficient user experience.
+Marketing website for Kifayti Health with a public-facing React frontend and a Node/Express backend powering:
 
-## Table of Contents
+- Blog listing + blog detail pages
+- Admin dashboard (JWT auth) for managing blog posts and viewing contact messages
+- Contact form that stores submissions in MongoDB and attempts to send an email notification
+- Optional blog image upload support (served from `/uploads`)
 
-- [Project Overview](#project-overview)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-  - [Prerequisites](#prerequisites)
-  - [Cloning the Repository](#cloning-the-repository)
-  - [Installing Dependencies](#installing-dependencies)
-- [Environment Setup](#environment-setup)
-  - [Backend Environment Variables](#backend-environment-variables)
-  - [Admin Frontend Environment Variables](#admin-frontend-environment-variables)
-- [Running the Project](#running-the-project)
-  - [Starting the Backend](#starting-the-backend)
-  - [Starting the Marketing Frontend](#starting-the-marketing-frontend)
-  - [Starting the Admin Frontend](#starting-the-admin-frontend)
-- [Usage](#usage)
-  - [Marketing Site](#marketing-site)
-  - [Admin Dashboard](#admin-dashboard)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [Contact](#contact)
+This repo is a monorepo with two apps:
+
+- `client/` — React + Vite + Tailwind
+- `server/` — Express + MongoDB (Mongoose)
 
 ---
 
-## Project Overview
+## Tech Stack
 
-The **Marketing Site Project** is divided into three main components:
+**Client**
 
-1. **Marketing Site Frontend**: Built with **React**, **Vite**, and **Tailwind CSS**, this is the public-facing website that showcases your marketing content.
+- React 18 + React Router
+- Vite
+- Tailwind CSS
+- GSAP / Framer Motion (animations)
+- Markdown rendering for blog content (`react-markdown`, `remark-gfm`, `rehype-sanitize`)
 
-2. **Backend**: Handles contact form submissions and blog management. It utilizes **Node.js**, **Express**, and **MongoDB Atlas** for data storage.
+**Server**
 
-3. **Admin Frontend**: A separate administrative interface for managing blog posts. It is built with **React** and uses **Basic Authentication** for security.
-
-This modular approach ensures a clear separation of concerns, making the project scalable and maintainable.
-
-## Technologies Used
-
-- **Frontend (Marketing Site & Admin Dashboard)**
-  - React
-  - Vite
-  - Tailwind CSS
-  - React Router DOM
-  - Framer Motion
-  - Axios
-  - React Toastify
-
-- **Backend**
-  - Node.js
-  - Express.js
-  - MongoDB Atlas
-  - Mongoose
-  - dotenv
-  - nodemon
-  - cors
-
-## Project Structure (ignore this structure its basic overview after git clone see the structure)
-
-```
-marketing-site-project/
-├── backend/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── .env
-│   ├── server.js
-│   ├── package.json
-│   └── package-lock.json
-├── marketing-frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── ...
-│   |    
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-├── admin-frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── ...
-│   ├── .env
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-├── README.md
-└── .gitignore
-```
+- Node.js + Express
+- MongoDB + Mongoose
+- Nodemailer (SMTP email)
+- Multer (image uploads)
+- JWT (admin-only endpoints)
 
 ---
 
-## Installation
+## Project Structure
 
-### Prerequisites
+```
+.
+├─ client/               # React frontend (Vite)
+└─ server/               # Express API + MongoDB
+```
 
-Ensure you have the following installed on your machine:
+Key routes and entrypoints:
 
-- **Node.js** (v14 or later)
-- **npm** (v6 or later) or **yarn**
-- **Git**
+- Client entry: `client/src/main.jsx`
+- Client routes: `client/src/App.jsx`
+- Server entry: `server/server.js`
+- Server routes: `server/routes/*`
 
-### Cloning the Repository
+---
+
+## Prerequisites
+
+- Node.js 18+ recommended
+- MongoDB connection string (MongoDB Atlas or local)
+
+---
+
+## Getting Started (Local Development)
+
+### 1) Install dependencies
+
+In one terminal:
 
 ```bash
-git clone <link>
-cd marketing-site-project
+cd server
+npm install
 ```
 
-### Installing Dependencies
+In a second terminal:
 
-The project consists of three separate folders: `backend`, `marketing-frontend`, and `admin-frontend`. Each requires its own set of dependencies.
+```bash
+cd client
+npm install
+```
 
-1. **Backend**
+### 2) Configure environment variables
 
-   ```bash
-   cd backend
-   npm install
-   ```
+Create a `.env` file for the server in `server/.env` (start from `server/.env.example`):
 
-2. **Marketing Frontend**
-
-   ```bash
-   cd ../marketing-frontend
-   npm install
-   ```
-
-3. **Admin Frontend**
-
-   ```bash
-   cd ../admin-frontend
-   npm install
-   ```
-
----
-
-## Environment Setup
-
-### Backend Environment Variables
-
-Create a `.env` file inside the `backend` directory with the following parameters:
-
-```env
-# backend/.env
-
-CONTACT_EMAIL=
-EMAIL_USERNAME=
-EMAIL_PASSWORD=
+```ini
 PORT=5000
-MONGO_URI=
+MONGO_URI=mongodb+srv://.../...
 
-ADMIN_USERNAME=
-ADMIN_PASSWORD=
+# Admin
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_admin_password
+
+# JWT
+JWT_SECRET=your_long_random_secret
+
+# Email (Nodemailer / Gmail SMTP)
+EMAIL_USERNAME=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+CONTACT_EMAIL=where_to_receive_contact_emails@example.com
 ```
 
-**Important:**
+Create a `.env` file for the client in `client/.env` (start from `client/.env.example`):
 
-- **Never commit `.env` files to version control.** Ensure `.env` is added to `.gitignore`.
-  
-  ```gitignore
-  # backend/.gitignore
-
-  node_modules/
-  .env
-  ```
-
-### Admin Frontend Environment Variables
-
-Create a `.env` file inside the `admin-frontend` directory with the following parameter:
-
-```env
-# admin-frontend/.env
-
-VITE_API_BASE_URL=http://localhost:5000/api
+```ini
+# Server base URL (no trailing slash). Examples:
+# - http://localhost:5000
+# - https://your-api.example.com
+VITE_API_URL=http://localhost:5000
 ```
 
-**Note:** Vite requires environment variables to be prefixed with `VITE_` to expose them to the frontend.
+Notes:
+
+- The Admin Dashboard reads `VITE_API_URL` and builds requests to `${VITE_API_URL}/api/...`.
+- All client API calls should be routed through `VITE_API_URL` so deployments can point to the correct API host.
+
+### 3) Run the apps
+
+Start the server:
+
+```bash
+cd server
+npm run dev
+```
+
+Start the client:
+
+```bash
+cd client
+npm run dev
+```
+
+Defaults:
+
+- Client: `http://localhost:5173`
+- Server: `http://localhost:5000`
 
 ---
 
-## Running the Project
+## Scripts
 
-After setting up environment variables and installing dependencies, you can start the backend and both frontends.
+### Client (`client/package.json`)
 
-### Starting the Backend
+- `npm run dev` — start Vite dev server
+- `npm run build` — production build
+- `npm run preview` — preview production build
+- `npm run lint` — run ESLint
+- `npm run host` — start Vite dev server accessible on your network
 
-1. **Navigate to the Backend Directory:**
+### Server (`server/package.json`)
 
-   ```bash
-   cd backend
-   ```
-
-2. **Start the Backend Server:**
-
-   ```bash
-   npm run dev
-   ```
-
-   **Note:** This command typically uses `nodemon` to automatically restart the server on code changes.
-
-3. **Backend Access:**
-
-   - **API Base URL:** `http://localhost:5000/api`
-
-### Starting the Marketing Frontend
-
-1. **Open a New Terminal Tab or Window.**
-
-2. **Navigate to the Marketing Frontend Directory:**
-
-   ```bash
-   cd marketing-frontend
-   ```
-
-3. **Start the Frontend Server:**
-
-   ```bash
-   npm run dev
-   ```
-
-4. **Frontend Access:**
-
-   - **URL:** `http://localhost:5174` (default Vite port)
-
-### Starting the Admin Frontend
-
-1. **Open Another Terminal Tab or Window.**
-
-2. **Navigate to the Admin Frontend Directory:**
-
-   ```bash
-   cd admin-frontend
-   ```
-
-3. **Start the Admin Frontend Server:**
-
-   ```bash
-   npm run dev
-   ```
-
-4. **Admin Frontend Access:**
-
-   - **URL:** `http://localhost:5174` (Ensure it uses a different port if necessary)
+- `npm run dev` — start with nodemon
+- `npm start` — start with node
 
 ---
 
-## Usage
+## API Reference
 
-### Marketing Site
+Base URL (local): `http://localhost:5000`
 
-- **Homepage:** Showcases your marketing content.
-- **Contact Form:** Allows users to send inquiries. Submissions are handled by the backend and sent to the specified contact email.
-- **Blog Section:** Displays a list of blog posts fetched from the backend.
+### Health / Static
 
-### Admin Dashboard
+- `GET /uploads/<filename>` — serves uploaded images
 
-- **Login:** Access the admin panel using the credentials specified in the backend `.env` file.
-  - **Username:** `admin`
-  - **Password:** `securepassword123`
-- **Manage Blogs:** Create, edit, and delete blog posts.
-- **Authentication:** Currently uses Basic Authentication. For enhanced security, consider implementing JWT-based authentication as outlined in the [JWT Implementation Guide](#jwt-implementation).
+### Blogs
 
----
+- `GET /api/blogs` — list all blog posts (public)
+- `GET /api/blogs/:id` — get a single blog post (public)
 
-## Deployment
+Admin-protected (JWT required):
 
-To deploy your application, consider the following steps:
+- `POST /api/blogs` — create blog post (multipart form-data)
+  - fields: `title`, `content` (markdown), `author`, `category`
+  - image: either `image` (file upload) OR `imageUrl` (string URL)
+- `PUT /api/blogs/:id` — update blog post (multipart form-data; same fields as create)
+- `DELETE /api/blogs/:id` — delete blog post
 
-1. **Backend Deployment:**
-   - Use platforms like **Heroku**, **DigitalOcean**, or **AWS**.
-   - Ensure environment variables are securely set on the hosting platform.
+Uploads:
 
-2. **Frontend Deployment:**
-   - Use platforms like **Vercel**, **Netlify**, or **AWS Amplify**.
-   - Ensure the frontend is configured to communicate with the deployed backend API.
+- Allowed types: jpeg/jpg/png/gif
+- Size limit: 5MB
 
-3. **Database:**
-   - **MongoDB Atlas** is already set up. Ensure your production database URI is correctly configured in the backend `.env` file.
+### Contact
 
-4. **Environment Variables:**
-   - Securely manage and set environment variables on your hosting platforms.
+- `POST /api/contact/submit` — submit contact form (public)
+  - body (JSON): `firstName`, `lastName`, `email`, `phone` (10 digits), `message`
+  - behavior: saves to MongoDB, then attempts to send an email notification
 
----
+Admin-protected (JWT required):
 
-## Contributing
+- `GET /api/contact` — list recent contact messages
+- `GET /api/contact/:id` — get a single contact message
+- `PATCH /api/contact/:id/status` — update status (`new` | `in-progress` | `completed`)
 
-Contributions are welcome! To contribute:
+### Admin
 
-1. **Fork the Repository.**
-2. **Create a New Branch:**
+- `POST /api/admin/login` — returns a JWT
+  - body (JSON): `username`, `password`
+- `GET /api/admin/verify` — verifies a JWT
 
-   ```bash
-   git checkout -b feature/YourFeatureName
-   ```
+#### Bearer token header
 
-3. **Commit Your Changes:**
+Admin endpoints require an `Authorization` header:
 
-   ```bash
-   git commit -m "Add some feature"
-   ```
+```text
+Authorization: Bearer <jwt>
+```
 
-4. **Push to the Branch:**
+Example:
 
-   ```bash
-   git push origin feature/YourFeatureName
-   ```
+```bash
+TOKEN=$(curl -s \
+  -H "Content-Type: application/json" \
+  -d '{"username":"'"$ADMIN_USERNAME"'","password":"'"$ADMIN_PASSWORD"'"}' \
+  http://localhost:5000/api/admin/login | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).token")
 
-5. **Open a Pull Request.**
-
-**Please ensure that your code follows the project's coding standards and includes appropriate documentation and tests.**
+curl -i \
+  -H "Authorization: Bearer $TOKEN" \
+  http://localhost:5000/api/admin/verify
+```
 
 ---
 
 
+## License
 
-## Contact
-
-For any inquiries or support, please contact:
-
-- **Email:** supersaiyanaryan@gmail.com
-- **GitHub:** [Aryanzs](https://github.com/Aryanzs)
+Proprietary software owned by Kifayti Health. All rights reserved.
 
 ---
 
-**Happy Coding and Managing Your Marketing Site! 🚀**"# marketing_site-main" 
+**Built by the Kifayti Health Development Team**
+
+*Empowering kidney care through innovative technology solutions*
