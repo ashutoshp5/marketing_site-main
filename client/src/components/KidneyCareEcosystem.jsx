@@ -122,7 +122,7 @@ const KidneyCareEcosystem = () => {
   }, [inView, hasPlayed]);
 
   return (
-    <div ref={containerRef} className="flex flex-col lg:flex-row items-center justify-between h-auto lg:h-screen bg-white p-4 md:p-8">
+    <div ref={containerRef} className="flex flex-col lg:flex-row items-center justify-between h-auto lg:h-screen bg-[#F8F8FC] p-4 md:p-8">
 
       {/* Left Section - Heading */}
       <div ref={leftSectionRef} className="lg:w-1/3 w-full lg:text-left text-center max-sm:text-left lg:pl-16 mb-8 lg:mb-0">
