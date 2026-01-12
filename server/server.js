@@ -14,6 +14,7 @@ import testimonialRoutes from './routes/testimonialRoutes.js';
 import recognizedLogoRoutes from './routes/recognizedLogoRoutes.js';
 import partnerLogoRoutes from './routes/partnerLogoRoutes.js';
 import subscriptionRoutes from './routes/subscriptionRoutes.js';
+import roleRoutes from './routes/roleRoutes.js';
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
 
@@ -103,6 +104,7 @@ app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/recognized-logos', recognizedLogoRoutes);
 app.use('/api/partner-logos', partnerLogoRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/roles', roleRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

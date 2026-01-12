@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Mail, FileText, Calendar, AlertCircle, CheckCircle2, Clock, Eye, Trash2, Edit, Plus, Lock, User, MessageSquare, Image } from 'lucide-react';
+import { Users, Mail, FileText, Calendar, AlertCircle, CheckCircle2, Clock, Eye, Trash2, Edit, Plus, Lock, User, MessageSquare, Image, Briefcase } from 'lucide-react';
 
 const getApiBaseUrl = () => {
   const fallback = import.meta.env.DEV ? 'http://localhost:5000' : '';
@@ -156,6 +156,7 @@ const AdminDashboard = () => {
 
   const [contacts, setContacts] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [recognizedLogos, setRecognizedLogos] = useState([]);
@@ -201,6 +202,15 @@ const AdminDashboard = () => {
   });
   const [partnerLogoActionLoading, setPartnerLogoActionLoading] = useState(false);
 
+  const [roleDraft, setRoleDraft] = useState({
+    title: '',
+    description: '',
+    location: '',
+    department: '',
+    isActive: true,
+  });
+  const [roleActionLoading, setRoleActionLoading] = useState(false);
+
   // API Base URL
   const API_BASE_URL = getApiBaseUrl();
   const SERVER_BASE_URL = getServerBaseUrl();
@@ -215,6 +225,7 @@ const AdminDashboard = () => {
     setAdminCredentials('');
     setContacts([]);
     setSubscriptions([]);
+    setRoles([]);
     setBlogs([]);
     setTestimonials([]);
     setRecognizedLogos([]);
@@ -393,6 +404,7 @@ const AdminDashboard = () => {
     try {
       if (activeTab === 'contacts') await fetchContacts();
       if (activeTab === 'subscriptions') await fetchSubscriptions();
+      if (activeTab === 'roles') await fetchRoles();
       if (activeTab === 'blogs') await fetchBlogs();
       if (activeTab === 'testimonials') await fetchTestimonials();
       if (activeTab === 'recognized') await fetchRecognizedLogos();
@@ -401,6 +413,112 @@ const AdminDashboard = () => {
       setError(err?.message || 'Failed to fetch data. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRoles = async () => {
+    const response = await fetch(`${API_BASE_URL}/roles/admin`, {
+      headers: {
+        'Authorization': `Bearer ${adminCredentials}`,
+      },
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new Error(`Failed to fetch roles (HTTP ${response.status}) ${body}`.trim());
+    }
+
+    const data = await response.json();
+    setRoles(Array.isArray(data) ? data : []);
+  };
+
+  const createRole = async () => {
+    if (!(roleDraft.title || '').trim()) {
+      setError('Role title is required');
+      return;
+    }
+
+    setRoleActionLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/roles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminCredentials}`,
+        },
+        body: JSON.stringify({
+          title: (roleDraft.title || '').trim(),
+          description: (roleDraft.description || '').trim(),
+          location: (roleDraft.location || '').trim(),
+          department: (roleDraft.department || '').trim(),
+          isActive: Boolean(roleDraft.isActive),
+        }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        throw new Error(`Failed to create role (HTTP ${response.status}) ${body}`.trim());
+      }
+
+      setRoleDraft({ title: '', description: '', location: '', department: '', isActive: true });
+      await fetchRoles();
+    } catch (err) {
+      setError(err?.message || 'Failed to create role');
+    } finally {
+      setRoleActionLoading(false);
+    }
+  };
+
+  const toggleRoleActive = async (role) => {
+    if (!role?._id) return;
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/roles/${role._id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminCredentials}`,
+        },
+        body: JSON.stringify({ isActive: !role.isActive }),
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        throw new Error(`Failed to update role (HTTP ${response.status}) ${body}`.trim());
+      }
+
+      await fetchRoles();
+    } catch (err) {
+      setError(err?.message || 'Failed to update role');
+    }
+  };
+
+  const deleteRole = async (roleId) => {
+    if (!roleId) return;
+    const ok = window.confirm('Delete this role? This cannot be undone.');
+    if (!ok) return;
+
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/roles/${roleId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${adminCredentials}`,
+        },
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        throw new Error(`Failed to delete role (HTTP ${response.status}) ${body}`.trim());
+      }
+
+      await fetchRoles();
+    } catch (err) {
+      setError(err?.message || 'Failed to delete role');
     }
   };
 
@@ -879,6 +997,21 @@ const AdminDashboard = () => {
                 </button>
 
                 <button
+                  onClick={() => setActiveTab('roles')}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
+                    activeTab === 'roles'
+                      ? 'border-[#14b8a6] text-[#14b8a6]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Briefcase className="w-4 h-4" />
+                  <span>Open Roles</span>
+                  <span className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full">
+                    {roles.length}
+                  </span>
+                </button>
+
+                <button
                   onClick={() => setActiveTab('testimonials')}
                   className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'testimonials'
@@ -1323,6 +1456,150 @@ const AdminDashboard = () => {
                                         <Trash2 className="w-4 h-4" />
                                       </button>
                                     </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'roles' && (
+                  <div>
+                    <div className="bg-white shadow rounded-lg overflow-hidden">
+                      <div className="px-6 py-4 border-b border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
+                          <Briefcase className="w-5 h-5" />
+                          <span>Open Roles</span>
+                        </h2>
+                        <p className="text-gray-600 mt-1">Add, disable, or remove roles shown on the website</p>
+                      </div>
+
+                      <div className="px-6 py-5 border-b border-gray-200 bg-gray-50">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Title</label>
+                            <input
+                              type="text"
+                              value={roleDraft.title}
+                              onChange={(e) => setRoleDraft((p) => ({ ...p, title: e.target.value }))}
+                              className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]"
+                              placeholder="e.g. Care Coordinator"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Location</label>
+                            <input
+                              type="text"
+                              value={roleDraft.location}
+                              onChange={(e) => setRoleDraft((p) => ({ ...p, location: e.target.value }))}
+                              className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]"
+                              placeholder="e.g. Remote / Delhi"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700">Department</label>
+                            <input
+                              type="text"
+                              value={roleDraft.department}
+                              onChange={(e) => setRoleDraft((p) => ({ ...p, department: e.target.value }))}
+                              className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]"
+                              placeholder="e.g. Operations"
+                            />
+                          </div>
+
+                          <div className="flex items-end">
+                            <label className="inline-flex items-center space-x-2 text-sm text-gray-700">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(roleDraft.isActive)}
+                                onChange={(e) => setRoleDraft((p) => ({ ...p, isActive: e.target.checked }))}
+                                className="h-4 w-4"
+                              />
+                              <span>Active (visible on website)</span>
+                            </label>
+                          </div>
+
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea
+                              value={roleDraft.description}
+                              onChange={(e) => setRoleDraft((p) => ({ ...p, description: e.target.value }))}
+                              className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#14b8a6]"
+                              rows={3}
+                              placeholder="Short description shown under the title"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                          <button
+                            onClick={createRole}
+                            disabled={roleActionLoading}
+                            className="bg-[#14b8a6] text-white px-4 py-2 rounded-lg hover:bg-[#10b3a1] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                          >
+                            {roleActionLoading ? 'Saving...' : 'Add Role'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {roles.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Briefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-500">No roles added yet</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {roles.map((role) => (
+                                <tr key={role._id} className="hover:bg-gray-50">
+                                  <td className="px-6 py-4">
+                                    <div className="font-medium text-gray-900">{role.title}</div>
+                                    {role.description ? (
+                                      <div className="text-sm text-teal-600 truncate max-w-xs" title={role.description}>
+                                        {role.description}
+                                      </div>
+                                    ) : null}
+                                  </td>
+                                  <td className="px-6 py-4 text-sm text-gray-600">{role.location || '-'}</td>
+                                  <td className="px-6 py-4 text-sm text-gray-600">{role.department || '-'}</td>
+                                  <td className="px-6 py-4">
+                                    <button
+                                      onClick={() => toggleRoleActive(role)}
+                                      className={`text-sm px-3 py-1 rounded-full ${
+                                        role.isActive
+                                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                      }`}
+                                      title="Toggle active"
+                                    >
+                                      {role.isActive ? 'Active' : 'Inactive'}
+                                    </button>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <button
+                                      onClick={() => deleteRole(role._id)}
+                                      className="text-red-600 hover:text-red-800 flex items-center space-x-1 text-sm"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      <span>Delete</span>
+                                    </button>
                                   </td>
                                 </tr>
                               ))}
