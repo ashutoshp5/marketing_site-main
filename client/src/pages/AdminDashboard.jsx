@@ -805,19 +805,19 @@ const AdminDashboard = () => {
           {/* Header */}
           <div className="bg-white shadow-sm border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex justify-between items-center py-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 py-6">
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
                   <p className="text-gray-600 mt-1">Manage your website content and inquiries</p>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <div className="bg-[#14b8a6] text-white px-4 py-2 rounded-lg flex items-center space-x-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                  <div className="bg-[#14b8a6] text-white px-4 py-2 rounded-lg flex items-center justify-center sm:justify-start space-x-2 w-full sm:w-auto">
                     <CheckCircle2 className="w-4 h-4" />
                     <span className="font-medium">KifaytiHealth Admin</span>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center sm:justify-start space-x-2 w-full sm:w-auto"
                   >
                     <Lock className="w-4 h-4" />
                     <span>Logout</span>
@@ -829,11 +829,11 @@ const AdminDashboard = () => {
 
           {/* Navigation Tabs */}
           <div className="bg-white border-b">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <nav className="flex space-x-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-auto">
+              <nav className="flex gap-4 sm:gap-8 min-w-max">
                 <button
                   onClick={() => setActiveTab('contacts')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'contacts'
                       ? 'border-[#14b8a6] text-[#14b8a6]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -850,7 +850,7 @@ const AdminDashboard = () => {
 
                 <button
                   onClick={() => setActiveTab('subscriptions')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'subscriptions'
                       ? 'border-[#14b8a6] text-[#14b8a6]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -865,7 +865,7 @@ const AdminDashboard = () => {
 
                 <button
                   onClick={() => setActiveTab('blogs')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'blogs'
                       ? 'border-[#14b8a6] text-[#14b8a6]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -880,7 +880,7 @@ const AdminDashboard = () => {
 
                 <button
                   onClick={() => setActiveTab('testimonials')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'testimonials'
                       ? 'border-[#14b8a6] text-[#14b8a6]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -895,7 +895,7 @@ const AdminDashboard = () => {
 
                 <button
                   onClick={() => setActiveTab('recognized')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'recognized'
                       ? 'border-[#14b8a6] text-[#14b8a6]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -910,7 +910,7 @@ const AdminDashboard = () => {
 
                 <button
                   onClick={() => setActiveTab('partners')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === 'partners'
                       ? 'border-[#14b8a6] text-[#14b8a6]'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
