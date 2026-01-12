@@ -13,6 +13,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import testimonialRoutes from './routes/testimonialRoutes.js';
 import recognizedLogoRoutes from './routes/recognizedLogoRoutes.js';
 import partnerLogoRoutes from './routes/partnerLogoRoutes.js';
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
 
@@ -101,6 +102,7 @@ app.use('/api/admin', adminLoginLimiter, adminRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/recognized-logos', recognizedLogoRoutes);
 app.use('/api/partner-logos', partnerLogoRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });

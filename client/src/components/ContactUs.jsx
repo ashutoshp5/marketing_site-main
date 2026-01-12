@@ -1,4 +1,43 @@
+import React, { useMemo, useState } from "react";
+import { getApiBaseUrl } from "../lib/apiBase";
+
 const ContactUs = () => {
+  const API_BASE_URL = useMemo(() => getApiBaseUrl(), []);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState({ type: "idle", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+
+  const subscribe = async () => {
+    const value = (email || "").trim();
+    if (!value) {
+      setStatus({ type: "error", message: "Please enter your email." });
+      return;
+    }
+
+    setSubmitting(true);
+    setStatus({ type: "idle", message: "" });
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/subscriptions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: value }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data?.error || `Subscribe failed (HTTP ${response.status})`);
+      }
+
+      setEmail("");
+      setStatus({ type: "success", message: data?.message || "Subscribed successfully." });
+    } catch (err) {
+      setStatus({ type: "error", message: err?.message || "Failed to subscribe." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-white max-sm:text-left text-center py-12 px-4 md:px-10 lg:px-20">
       {/* Heading 2 - Join Us On */}
@@ -46,15 +85,38 @@ const ContactUs = () => {
           <input
             type="email"
             placeholder="youremail123@gmail.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                subscribe();
+              }
+            }}
             className="bg-white w-full md:w-[320px] lg:w-[440px] p-4 outline-none text-gray-700 placeholder-gray-400"
           />
         </div>
 
         {/* Subscribe Button */}
-        <button className="bg-red-500 text-white px-8 py-[9.5px] rounded-md shadow-lg w-full md:w-auto hover:bg-red-600 transition-colors duration-300">
-          SUBSCRIBE
+        <button
+          type="button"
+          onClick={subscribe}
+          disabled={submitting}
+          className="bg-red-500 text-white px-8 py-[9.5px] rounded-md shadow-lg w-full md:w-auto hover:bg-red-600 transition-colors duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {submitting ? "SUBSCRIBING..." : "SUBSCRIBE"}
         </button>
       </div>
+
+      {status.type !== "idle" && (
+        <div
+          className={`max-w-3xl mx-auto text-sm mt-3 ${
+            status.type === "success" ? "text-green-700" : "text-red-600"
+          }`}
+        >
+          {status.message}
+        </div>
+      )}
     </div>
   );
 };

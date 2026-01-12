@@ -155,6 +155,7 @@ const AdminDashboard = () => {
   const IMAGE_HELP_TEXT = 'Max 2MB. Upload will be stored on Cloudinary, or paste an image URL to save directly.';
 
   const [contacts, setContacts] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [recognizedLogos, setRecognizedLogos] = useState([]);
@@ -213,6 +214,7 @@ const AdminDashboard = () => {
     setIsAuthenticated(false);
     setAdminCredentials('');
     setContacts([]);
+    setSubscriptions([]);
     setBlogs([]);
     setTestimonials([]);
     setRecognizedLogos([]);
@@ -390,6 +392,7 @@ const AdminDashboard = () => {
 
     try {
       if (activeTab === 'contacts') await fetchContacts();
+      if (activeTab === 'subscriptions') await fetchSubscriptions();
       if (activeTab === 'blogs') await fetchBlogs();
       if (activeTab === 'testimonials') await fetchTestimonials();
       if (activeTab === 'recognized') await fetchRecognizedLogos();
@@ -398,6 +401,48 @@ const AdminDashboard = () => {
       setError(err?.message || 'Failed to fetch data. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSubscriptions = async () => {
+    const response = await fetch(`${API_BASE_URL}/subscriptions`, {
+      headers: {
+        'Authorization': `Bearer ${adminCredentials}`,
+      },
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new Error(`Failed to fetch subscriptions (HTTP ${response.status}) ${body}`.trim());
+    }
+
+    const data = await response.json();
+    setSubscriptions(Array.isArray(data) ? data : []);
+  };
+
+  const deleteSubscription = async (subscriptionId) => {
+    if (!subscriptionId) return;
+    const ok = window.confirm('Delete this subscribed email? This cannot be undone.');
+    if (!ok) return;
+
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/subscriptions/${subscriptionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${adminCredentials}`,
+        },
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        throw new Error(`Failed to delete subscription (HTTP ${response.status}) ${body}`.trim());
+      }
+
+      await fetchSubscriptions();
+    } catch (err) {
+      setError(err?.message || 'Failed to delete subscription');
     }
   };
 
@@ -802,6 +847,22 @@ const AdminDashboard = () => {
                     </span>
                   )}
                 </button>
+
+                <button
+                  onClick={() => setActiveTab('subscriptions')}
+                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                    activeTab === 'subscriptions'
+                      ? 'border-[#14b8a6] text-[#14b8a6]'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Subscribed Emails</span>
+                  <span className="bg-gray-100 text-gray-800 text-xs px-2 py-0.5 rounded-full">
+                    {subscriptions.length}
+                  </span>
+                </button>
+
                 <button
                   onClick={() => setActiveTab('blogs')}
                   className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 ${
@@ -964,6 +1025,70 @@ const AdminDashboard = () => {
                                         <option value="resolved">Resolved</option>
                                       </select>
                                     </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'subscriptions' && (
+                  <div>
+                    <div className="bg-white shadow rounded-lg overflow-hidden">
+                      <div className="px-6 py-4 border-b border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
+                          <Users className="w-5 h-5" />
+                          <span>Newsletter Subscriptions</span>
+                        </h2>
+                        <p className="text-gray-600 mt-1">Emails collected from the website Subscribe section</p>
+                      </div>
+
+                      {subscriptions.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-500">No subscriptions yet</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Email
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Date
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Actions
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {subscriptions.map((sub) => (
+                                <tr key={sub._id} className="hover:bg-gray-50">
+                                  <td className="px-6 py-4">
+                                    <div className="text-sm font-medium text-gray-900">{sub.email}</div>
+                                  </td>
+                                  <td className="px-6 py-4 text-sm text-gray-600">
+                                    <div className="flex items-center space-x-1">
+                                      <Calendar className="w-4 h-4" />
+                                      <span>{sub?.createdAt ? new Date(sub.createdAt).toLocaleDateString() : '-'}</span>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <button
+                                      onClick={() => deleteSubscription(sub._id)}
+                                      className="text-red-600 hover:text-red-800 flex items-center space-x-1 text-sm"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      <span>Delete</span>
+                                    </button>
                                   </td>
                                 </tr>
                               ))}
