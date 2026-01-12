@@ -5,7 +5,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lottie from "lottie-react";
 import animationData from "../assets/animations/▶-Animation-frame.json";
 import { useInView } from "react-intersection-observer";
-import animationGit from "../assets/animations/Animation.gif";
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -29,51 +28,35 @@ const KidneyCareEcosystem = () => {
 
     // Only run animations on desktop (min-width: 768px)
     mm.add("(min-width: 768px)", () => {
-      // Split and animate left heading section word by word
-      const leftHeadings = leftSectionRef.current.querySelectorAll('h1, h2');
-      leftHeadings.forEach((heading) => {
-        const words = heading.textContent.split(' ');
-        heading.innerHTML = words.map(word => `<span class="word" style="display: inline-block;"><span style="display: inline-block;">${word}</span></span>`).join(' ');
-      });
-
-      const leftWords = leftSectionRef.current.querySelectorAll('.word span');
-
-      gsap.from(leftWords, {
+      const leftHeadings = leftSectionRef.current?.querySelectorAll('h1, h2') || [];
+      gsap.from(leftHeadings, {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 80%",
           end: "top 20%",
           toggleActions: "play none none reverse"
         },
-        y: 100,
+        y: 60,
         opacity: 0,
         duration: 0.8,
         ease: "power2.out",
-        stagger: 0.08
+        stagger: 0.12
       });
 
-      // Split and animate right text section word by word
-      const rightParagraphs = rightSectionRef.current.querySelectorAll('p');
-      rightParagraphs.forEach((paragraph) => {
-        const words = paragraph.textContent.split(' ');
-        paragraph.innerHTML = words.map(word => `<span class="word" style="display: inline-block; overflow: hidden;"><span style="display: inline-block;">${word}</span></span>`).join(' ');
-      });
-
-      const rightWords = rightSectionRef.current.querySelectorAll('.word span');
-
-      gsap.from(rightWords, {
+      const rightParagraphs = rightSectionRef.current?.querySelectorAll('p') || [];
+      gsap.from(rightParagraphs, {
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 80%",
           end: "top 20%",
           toggleActions: "play none none reverse"
         },
-        y: 100,
+        y: 60,
         opacity: 0,
-        duration: 0.8,
+        duration: 0.9,
         ease: "power2.out",
-        stagger: 0.06,
-        delay: 0.2
+        stagger: 0.18,
+        delay: 3
       });
 
       // Animate center phone with scale and rotation
@@ -164,7 +147,7 @@ const KidneyCareEcosystem = () => {
       </div>
 
       {/* Right Section - Text */}
-      <div ref={rightSectionRef} className="lg:w-1/3 w-full lg:text-right text-center mt-8 lg:mt-[300px] px-4 lg:px-0">
+      <div ref={rightSectionRef} className="lg:w-1/3 w-full lg:text-right text-center mt-8 px-4 lg:px-0">
         <div className="text-teal-800 max-sm:text-left">
           <p className="text-sm sm:text-base md:text-lg lg:text-lg mb-4">
             A CKD (Stage 1 to Stage 4, dialysis & transplant) patient needs multiple services in their treatment journey.
